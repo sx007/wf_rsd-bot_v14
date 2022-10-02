@@ -1,1 +1,26 @@
-
+{
+  "name": "wf_rsd-bot-v14",
+  "version": "14.2022.10.02",
+  "description": "Bot for clan Discord",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "engines": {
+    "node": ">=16.6.0",
+    "npm": ">=8.3.0"
+  },
+  "keywords": [
+    "node",
+    "discord",
+    "nodejs",
+    "bot"
+  ],
+  "author": "sx007",
+  "license": "CC BY",
+  "dependencies": {
+    "discord.js": "^14.5.0",
+    "request": "2.88.2",
+    "npm": "^8.19.2"
+  }
+}
