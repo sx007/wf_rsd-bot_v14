@@ -25,6 +25,175 @@ const customRequest = request.defaults({
     timeout : 20000
 });
 
+//Заготовка для Embed сообщения (обычное)
+function EmbMsg(title, color, descr){
+  let embed = new EmbedBuilder()
+  .setTitle(title)
+  .setColor(color)
+  .setDescription(descr)
+  .setTimestamp()
+  return embed;
+}
+
+//Заготовка для Embed сообщения (справка)
+function EmbMsgHelp(title, color, descr, img){
+  let embed = new EmbedBuilder()
+  .setTitle(title)
+  .setColor(color)
+  .setDescription(descr)
+  .setImage(img)
+  .setTimestamp()
+  return embed;
+}
+
+//Заготовка для Embed сообщения (информационные сообщения)
+function EmbedMsg(color, Descr){
+  let embed = new EmbedBuilder()
+  .setColor(color)
+  .setDescription(Descr)
+  .setTimestamp()
+  return embed;
+}
+
+//Заготовка для Кнопки-ссылки
+function MsgLink(link,linkdesc){
+  let linkButton = new ActionRowBuilder()
+  .addComponents(
+      new ButtonBuilder()
+      .setLabel(linkdesc)
+      .setURL(link)
+      .setStyle(ButtonStyle.Link)
+      );
+  return linkButton;
+}
+
+//Список для гороскопа
+function listForHoro(CustId){
+  const row = new ActionRowBuilder()
+      .addComponents(
+          new SelectMenuBuilder()
+              .setCustomId(CustId)
+              .setPlaceholder('Выберите знак зодиака')
+              .addOptions([
+                  {
+                      label: 'Овен',
+                      description: 'Прогноз для знака - Овен',
+                      value: 'aries',
+                      emoji: '♈',
+                  },
+                  {
+                      label: 'Телец',
+                      description: 'Прогноз для знака - Телец',
+                      value: 'taurus',
+                      emoji: '♉',
+                  },
+                  {
+                      label: 'Близнецы',
+                      description: 'Прогноз для знака - Близнецы',
+                      value: 'gemini',
+                      emoji: '♊',
+                  },
+                  {
+                      label: 'Рак',
+                      description: 'Прогноз для знака - Рак',
+                      value: 'cancer',
+                      emoji: '♋',
+                  },
+                  {
+                      label: 'Лев',
+                      description: 'Прогноз для знака - Лев',
+                      value: 'leo',
+                      emoji: '♌',
+                  },
+                  {
+                      label: 'Дева',
+                      description: 'Прогноз для знака - Дева',
+                      value: 'virgo',
+                      emoji: '♍',
+                  },
+                  {
+                      label: 'Весы',
+                      description: 'Прогноз для знака - Весы',
+                      value: 'libra',
+                      emoji: '♎',
+                  },
+                  {
+                      label: 'Скорпион',
+                      description: 'Прогноз для знака - Скорпион',
+                      value: 'scorpio',
+                      emoji: '♏',
+                  },
+                  {
+                      label: 'Стрелец',
+                      description: 'Прогноз для знака - Стрелец',
+                      value: 'sagittarius',
+                      emoji: '♐',
+                  },
+                  {
+                      label: 'Козерог',
+                      description: 'Прогноз для знака - Козерог',
+                      value: 'capricorn',
+                      emoji: '♑',
+                  },
+                  {
+                      label: 'Водолей',
+                      description: 'Прогноз для знака - Водолей',
+                      value: 'aquarius',
+                      emoji: '♒',
+                  },
+                  {
+                      label: 'Рыбы',
+                      description: 'Прогноз для знака - Рыбы',
+                      value: 'pisces',
+                      emoji: '♓',
+                  },
+              ]),
+      );
+  return row;
+}
+
+//Проверка ролей Администратора и Модераторов по ID из переменной (конфигурации)
+function hasRoleId(mem){
+  var idRepl = idAdmMod.replace(/ +/g, ' ');
+  var idSplit = idRepl.split(' ');
+  var result = false;
+  //Перебираем ID в переменной
+  idSplit.forEach(function(idSplit) {
+      if (idSplit != '') {
+          //Проверяем длинну ID
+          if (idSplit.length === 18) {
+              //Проверка указанного id сервера
+              if (idSrv !== '' || idSrv.length === 18) {
+                  //Проверка роли
+                  var members = client.guilds.cache.get(idSrv).roles.cache.find(role => role.id === idSplit).members.map(m=>m.user.id);
+                  //Находим среди пользователей с ролью автора сообщения
+                  if (members.indexOf(mem.id) != -1) {
+                      result = true;
+                  }
+              }
+          }
+      }
+  });
+  //Выводим результат
+  return result;
+}
+
+//Проверка на JSON
+function IsJsonString(str) {
+  str = typeof item !== "string"
+      ? JSON.stringify(str)
+      : str;
+  try {
+      str = JSON.parse(str);
+  } catch (e) {
+      return false;
+  }
+  if (typeof str === "object" && str !== null) {
+      return true;
+  }
+  return false;
+}
+
 
 //
 
