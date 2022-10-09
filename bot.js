@@ -194,11 +194,49 @@ function IsJsonString(str) {
     return false;
 }
 
+//----------------------------------------
+//Список команд
+function funcCommands(authorRole, command){
+    //authorRole = 0-Владелец сервера, 1-Админы и модераторы (из idAdmMod), 2-Прочие пользователи
+    //command = название команды из чата
 
+    //Команды владельца сервера
+    if (authorRole == 0) {
+        //Текстовый чат
+        return EmbMsg(':information_source: СПИСОК КОМАНД',0x7ED321,`\n**\`${prefix}команды\`** отобразить список всех доступных команд\n**\`${prefix}боец\`** получить игровую статистику о бойце\n**\`${prefix}клан\`** получить информацию о ежемесячном рейтинге клана\n**\`${prefix}бот\`** получить информацию о данном боте\n**\`${prefix}вк\`** получить ссылку на группу клана в VK\n**\`${prefix}монетка\`** случайный результат подброса монетки\n**\`${prefix}гороскоп\`** Позволяет получить гороскоп на сегодня по указанному знаку зодиака\n\n**\`${prefix}rs\`** перезагрузить бота\n**\`${prefix}ping\`** узнать время генерации сообщения\n**\`${prefix}удалить\`** позволяет удалить N-количество сообщений в текстовом канале\n**\`${prefix}кик\`** позволяет выгналь пользователя с сервера\n**\`${prefix}бан\`** позволяет забанить пользователя на сервере\n\n:warning: Получить подробную справку о любой команде можно добавив через пробел вопросительный знак.\n**Пример набора команды**\n\`\`\`${prefix}${command} ?\`\`\``);
+    }
+    //Команды админов и модераторов (из idAdmMod)
+    if (authorRole == 1) {
+        //Текстовый чат
+        return EmbMsg(':information_source: СПИСОК КОМАНД',0x7ED321,`\n**\`${prefix}команды\`** отобразить список всех доступных команд\n**\`${prefix}боец\`** получить игровую статистику о бойце\n**\`${prefix}клан\`** получить информацию о ежемесячном рейтинге клана\n**\`${prefix}бот\`** получить информацию о данном боте\n**\`${prefix}вк\`** получить ссылку на группу клана в VK\n**\`${prefix}монетка\`** случайный результат подброса монетки\n**\`${prefix}гороскоп\`** Позволяет получить гороскоп на сегодня по указанному знаку зодиака\n\n**\`${prefix}кик\`** позволяет выгналь пользователя с сервера\n**\`${prefix}бан\`** позволяет забанить пользователя на сервере\n\n:warning: Получить подробную справку о любой команде можно добавив через пробел вопросительный знак.\n**Пример набора команды**\n\`\`\`${prefix}${command} ?\`\`\``);
+    }
+    //Команды прочие пользователи
+    if (authorRole == 2) {
+        //Текстовый чат
+        return EmbMsg(':information_source: СПИСОК КОМАНД',0x7ED321,`\n**\`${prefix}команды\`** отобразить список всех доступных команд\n**\`${prefix}боец\`** получить игровую статистику о бойце\n**\`${prefix}клан\`** получить информацию о ежемесячном рейтинге клана\n**\`${prefix}бот\`** получить информацию о данном боте\n**\`${prefix}вк\`** получить ссылку на группу клана в VK\n**\`${prefix}монетка\`** случайный результат подброса монетки\n**\`${prefix}гороскоп\`** Позволяет получить гороскоп на сегодня по указанному знаку зодиака\n\n:warning: Получить подробную справку о любой команде можно добавив через пробел вопросительный знак.\n**Пример набора команды**\n\`\`\`${prefix}${command} ?\`\`\``);
+    }
+}
 
+//ВК
+function funcVk(){
+    return EmbMsg(':thumbsup: Группа клана', 0x2B71FF, `\nВступайте в нашу группу в социальной сети ВКонтакте:\n[Наша группа в ВК](https://vk.com/wf_rsd)`);
+}
 
-
-
+//Монетка
+function funcMonetka(){
+    //Вычисляем случайное число от 1 до 3
+    var random = Math.floor(Math.random() * 3) + 1;
+    if (random === 1) {
+        //Если число = 1, то выпадает орёл.
+        return ':full_moon: Орёл!';
+    } else if (random === 2) { 
+        //Если число = 2, то выпадает решка.
+        return ':new_moon: Решка!';
+    } else if (random === 3) { 
+        //Если число = 3, то монета падает ребром.
+        return ':last_quarter_moon: Монета упала ребром!';
+    }
+}
 
 
 
@@ -230,18 +268,99 @@ client.on('messageCreate', (message) => {
         }
     }
 
-    if (message.content === 'ping'){
-        message.reply('Pong!');
-        if(hasRoleId(message.author)){
-            message.reply('adm!');
+    //Удаление из текстого канала ссылок-приглашений
+    if (message.content.includes('discord.gg/') ||  message.content.includes('discordapp.com/invite/')){
+        //Если сообщение публичное
+        if (privateMsg() == false){
+            //Если сообщение от Администратора или Модератора, то разрешаем
+            if(!hasRoleId(message.author)){
+                //Удаляем сообщение
+                message.delete();
+                //Отправляем в личку сообщение пользователю
+                message.author.send({ content: 'Ссылки-приглашения (Invite) **запрещены** на данном сервере!\nЧтобы кого-то пригласить на другой Discord-сервер, отправьте приглашение или ссылку в личку определённому человеку.', allowedMentions: { repliedUser: false }});
+            }
+        }
+    }
+
+    //Проверка на наличие префикса в начале сообщения
+    if (!message.content.startsWith(prefix)) return;
+    //Получение команды из полученного сообщения
+    const commandBody = message.content.slice(prefix.length);
+    const args = commandBody.split(' ');
+    const numArgs = args.map(x => parseFloat(x));
+    const numArg = numArgs.length;
+    const command = args.shift().toLowerCase();
+
+    //----------------------------------------------------
+    if (command === "команды") {
+        if(numArg === 2 && args[0] === "?") {
+            //Выдаём справку по данной команде
+            message.reply({ embeds: [EmbMsgHelp(':information_source: СПРАВКА ПО КОМАНДЕ', 0x7ED321, `\nПоказывает краткую информацию доступных для вас команд.\n\n**Пример набора команды**\n\`\`\`${prefix}${command}\`\`\``, 'https://i.imgur.com/h2sueFM.gif')]});
+            return;
         }
         //Если сообщение публичное
         if (privateMsg() == false){
-            message.reply('pub');
+            //Если публичное сообщение
+            if (hasRoleId(message.author)) {
+                //Проверяем на права владельца сервера
+                if (message.author.id === ownerSrvID) {
+                    //Если есть права владельца
+                    message.reply({ embeds: [funcCommands(0,command)]});
+                } else {
+                    //Если Администратор или Модератор
+                    message.reply({ embeds: [funcCommands(1,command)]});
+                }
+            } else {
+                //Обычный пользователь
+                message.reply({ embeds: [funcCommands(2,command)]});
+            }
         } else {
-            message.reply('priv');
+            //Если личное сообщение
+            if (hasRoleId(message.author)) {
+                //Проверяем на права владельца сервера
+                if (message.author.id === ownerSrvID) {
+                    //Если есть права владельца
+                    message.reply({ embeds: [funcCommands(0,command)]});
+                } else {
+                    //Если Администратор или Модератор
+                    message.reply({ embeds: [funcCommands(1,command)]});
+                }
+            } else {
+                //Обычный пользователь
+                message.reply({ embeds: [funcCommands(2,command)]});
+            }
         }
     }
+
+    //Если отправлена команда вк
+    else if (command === "вк") {
+        if(numArg === 2 && args[0] === "?") {
+            //Выдаём справку по данной команде
+            message.reply({ embeds: [EmbMsgHelp(':information_source: СПРАВКА ПО КОМАНДЕ', 0x7ED321, `\nДанная команда позволяет получить ссылку на группу нашего клана в социальной сети ВКонтакте.\n\n**Пример набора команды**\n\`\`\`${prefix}${command}\`\`\``, 'https://i.imgur.com/LtMTPRC.gif')]});
+            return;
+        }
+        if(numArg === 1) {
+            //Отправляем ссылку на группу
+            message.reply({ embeds: [funcVk()], components: [MsgLink('https://vk.com/wf_rsd','Наша группа в ВК')]});
+            return;
+        }
+        if(numArg > 1 && args[0] != "?") {
+            //Выдаём ошибку
+            message.reply({ embeds: [EmbMsg(':no_entry_sign: Ошибка', 0x2B71FF, `\nДопущена ошибка при вводе команды.\n\n**Пример набора команды**\n\`\`\`${prefix}${command}\`\`\``)]});
+            return;
+        }
+    }
+
+    /* Подбросить монетку */
+    else if (command === "монетка") {
+        if(numArg === 2 && args[0] === "?") {
+            //Выдаём справку по данной команде
+            message.reply({ embeds: [EmbMsgHelp(':information_source: СПРАВКА ПО КОМАНДЕ', 0x7ED321, `\nВыдаёт случайный результат подброса монетки.\n\nВарианты:\nОрёл, решка или упала на ребро.\n\n**Пример набора команды**\n\`\`\`${prefix}${command}\`\`\``, 'https://i.imgur.com/zaQC0LS.gif')]});
+            return;
+        }
+        message.reply({ content: funcMonetka(), allowedMentions: { repliedUser: false }});
+    }
+
 });
 
 client.login(token);
